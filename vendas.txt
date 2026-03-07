@@ -1,0 +1,3 @@
+Miguel Tavares;Cobre Novo;12;2026-01-12T15:23
+Carlos Coutinho;Aluminio;53;2026-01-15T08:59
+Filipa Prudencio;Ferro;98;2026-01-17T13:07

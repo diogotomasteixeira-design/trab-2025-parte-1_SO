@@ -1,0 +1,1 @@
+/home/so/trabalho-2025-2026/utils/parte-1/validator/regista_material.sh

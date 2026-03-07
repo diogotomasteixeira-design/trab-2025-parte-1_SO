@@ -1,0 +1,4 @@
+Ferro;1;1000
+Aluminio;2
+Cobre Novo;20
+Cobre Velho;13;750
