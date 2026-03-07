@@ -10,7 +10,8 @@
 ## Nome do Módulo: regista_material.sh
 ## Descrição/Explicação do Módulo:
 ##
-##
+## Neste módulo registramos e organizamos os materiais em ficheiros .txt excutando 
+## as devidas verificações a nível da integridade da informação recebida
 #####################################################################################
 
 ##// Constantes e variáveis globais
@@ -50,7 +51,7 @@ s1_1_ValidaArgumentos () {
         fi
     fi
 
-    so_success S1.1 "Material Valido"
+    so_success S1.1 "Argumento Valido"
     so_debug ">"
 }
 
@@ -58,49 +59,83 @@ s1_1_ValidaArgumentos () {
 ## * @brief  s1_2_ValidaMaterial 
 ## *
 ## * Verifica se o ficheiro materiais.txt existe e pode ser lido / escrito
-## * Se não existe cria
+## * Se não existe passa para S1.3
 ## * Se não se pode ler / escrever dá erro
-## * Verifica se o <Material> existe (maiúsculas importam)
+## * Verifica se o <Material> existe (maiúsculas importam) 
 ## *
 ## */
 s1_2_ValidaMaterial () {
     so_debug "<"
 
-    
+    if [ ! -f "materiais.txt" ]; then
+        so_error S1.2 "ficheiro materiais.txt não existe"
+        return 0
+    elif [ ! -r "materiais.txt" ] || [ ! -w "materiais.txt" ]; then
+        so_error S1.2 "Ficheiro materiais.txt não tem as permissões de escrito ou leitura corretas"
+        exit 1
+    elif grep -q "^$1;" materiais.txt ; then
+        so_error S1.2 "Material já existe no sistema"
+        return 1
+    else 
+        so_success S1.2 "Material válido"
+        return 0
+    fi
 
     so_debug ">"
 }
 
 ##/**
-## * @brief  s1_3_AdicionaMaterial Ler a descrição da tarefa S1.3 no enunciado
+## * @brief  s1_3_AdicionaMaterial 
+## *
+## * Escrever em materiais.txt novos materiais se for o caso
+## *
 ## */
 s1_3_AdicionaMaterial () {
     so_debug "<"
 
-    ##// Substituir este comentário pelo código a ser implementado pelo aluno
+    if [ $# -eq 2 ]; then
+        echo $1";"$2 >> materiais.txt
+        so_success S1.3 "Material adicionado"
+    elif [ $# -eq 3 ]; then
+        echo $1";"$2";"$3 >> materiais.txt
+        so_success S1.3 "Material adicionado"
+    else
+        so_error S1.3 "Erro ao adicionar o material à lista"
+        exit 1
+    fi
 
     so_debug ">"
 }
 
 ##/**
-## * @brief  s1_4_ListaMaterial Ler a descrição da tarefa S1.4 no enunciado
+## * @brief  s1_4_ListaMaterial 
+## *
+## * Cria ficheiro materiais-ordenados-preço.txt e passa os materiais ja registrados para lá por ordem crescente
+## *
 ## */
 s1_4_ListaMaterial () {
     so_debug "<"
 
-    ##// Substituir este comentário pelo código a ser implementado pelo aluno
+    sort -t ";" -k2 -n materiais.txt > materiais-ordenados-preco.txt
 
+    if [ ! $? -eq 0 ];then
+        so_error S1.4 "Erro ao criar o ficheiro ordenado"
+        exit 1
+    fi
+
+    so_success S1.4 "Materiais ordenados"
     so_debug ">"
 }
 
-main () {. ## Passa os argumentos para cada uma das funções
+main () { ## Passa os argumentos para cada uma das funções
     so_debug "<"
 
     s1_1_ValidaArgumentos "$@"
 
     s1_2_ValidaMaterial "$@"
 
-    if [ $? -eq 0 ]; then
+    
+    if [ $? -eq 1 ]; then
         s1_4_ListaMaterial "$@" 
     else 
         s1_3_AdicionaMaterial "$@"
