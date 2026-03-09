@@ -1,2 +1,2 @@
-Ouro;10000
-madeira;10;1000000
+Cobre Novo;1000;150
+Madeira;10;1000000

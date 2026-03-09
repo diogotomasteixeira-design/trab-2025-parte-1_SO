@@ -6,7 +6,7 @@
 #####################################################################################
 ## ISCTE-IUL: Trabalho prático de Sistemas Operativos 2025/2026, Enunciado Versão 1
 ##
-## Aluno: Nº:       Nome:
+## Aluno: Nº: 129840 Nome: Diogo Teixeira
 ## Nome do Módulo: manutencao.sh
 ## Descrição/Explicação do Módulo:
 ##
@@ -17,20 +17,59 @@
 SUCCESS=0
 
 ##/**
-## * @brief  s3_1_Manutencao Ler a descrição da tarefa S3.1 no enunciado
+## * @brief  s3_1_Manutencao 
+## * 
+## * Verifica se materiais.txt existe, pode ser lido e escrito
+## * Caso vendas.txt não exista não dá erro nenhum e se existir valida se pode ser lido
+## * Verifica se algum <Material> atingiu o <Limite diário> no dia anterior se sim, aumento em 100kg
+## * 
 ## */
 s3_1_Manutencao () {
     so_debug "<"
 
-    ##// Substituir este comentário pelo código a ser implementado pelo aluno
+    if [ ! -f "materiais.txt" ]; then
+        so_error S3.1 "Ficheiro materiais.txt não existe"
+        exit 1
+    elif [ ! -r "materiais.txt" ] || [ ! -w "materiais.txt" ]; then
+        so_error S3.1 "Ficheiro materiais.txt não tem as permissões de escrito ou leitura corretas"
+        exit 1
+    fi
 
+    if [ -f "vendas.txt" ]; then
+        if [ ! -r "vendas.txt" ]; then
+            so_error S3.1 "ficheiro vendas.txt não pode ser lido"
+            exit 1 
+        fi
+    fi
+
+    ontem=$(date -d "yesterday" "+%Y-%m-%d")
+
+    while IFS=";" read -r material preco limite; do
+        [ -z "$limite" ] && continue
+
+        total=0
+        if [ -f "vendas.txt" ]; then
+            total=$(grep "^[^;]*;${material};[^;]*;${ontem}" vendas.txt \
+                    | cut -d";" -f3 \
+                    | awk '{sum += $1} END {print sum+0}')
+        fi
+
+        if [ "$total" -eq "$limite" ]; then
+            novo_limite=$((limite + 100))
+            sed -i "s/^${material};${preco};${limite}$/${material};${preco};${novo_limite}/" materiais.txt
+        fi
+
+    done < materiais.txt
+
+
+    so_success S3.1 "Manutenção realizada com sucesso"
     so_debug ">"
 }
 
 main () {
     so_debug "<"
 
-    ##// Substituir este comentário pelo código a ser implementado pelo aluno
+    s3_1_Manutencao "$@"
 
     so_debug ">"
 }

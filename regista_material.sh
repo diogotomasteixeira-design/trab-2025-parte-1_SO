@@ -10,8 +10,9 @@
 ## Nome do Módulo: regista_material.sh
 ## Descrição/Explicação do Módulo:
 ##
-## Neste módulo registramos e organizamos os materiais em ficheiros .txt excutando 
-## as devidas verificações a nível da integridade da informação recebida
+##  Neste módulo registramos e organizamos os materiais em ficheiros .txt excutando 
+## as devidas verificações a nível da integridade da informação recebida.
+##
 #####################################################################################
 
 ##// Constantes e variáveis globais
@@ -68,7 +69,7 @@ s1_2_ValidaMaterial () {
     so_debug "<"
 
     if [ ! -f "materiais.txt" ]; then
-        so_error S1.2 "ficheiro materiais.txt não existe"
+        so_error S1.2 "Ficheiro materiais.txt não existe"
         return 0
     elif [ ! -r "materiais.txt" ] || [ ! -w "materiais.txt" ]; then
         so_error S1.2 "Ficheiro materiais.txt não tem as permissões de escrito ou leitura corretas"
