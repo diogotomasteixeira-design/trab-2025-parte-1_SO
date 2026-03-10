@@ -45,7 +45,7 @@ s1_1_ValidaArgumentos () {
         exit 1
     fi
 
-    if [ -n "$3" ]; then
+    if [ $# -eq 3 ]; then
         if ! [[ "$3" =~ ^[0-9]+$ ]] || [ "$3" -le 0 ]; then
             so_error S1.1 "Limite diário tem ser um valor positivo"
             exit 1
@@ -70,16 +70,21 @@ s1_2_ValidaMaterial () {
 
     if [ ! -f "materiais.txt" ]; then
         so_error S1.2 "Ficheiro materiais.txt não existe"
+        touch materiais.txt 2>/dev/null
+        if [ ! -f "materiais.txt" ]; then
+            so_error S1.2 "Ficheiro materiais.txt não pode ser criado"
+            exit 1
+        fi
         return 0
     elif [ ! -r "materiais.txt" ] || [ ! -w "materiais.txt" ]; then
         so_error S1.2 "Ficheiro materiais.txt não tem as permissões de escrito ou leitura corretas"
         exit 1
-    elif grep -q "^$1;" materiais.txt ; then
-        so_error S1.2 "Material já existe no sistema"
-        return 1
+    elif ! grep -q "^$1;" materiais.txt ; then
+        so_error S1.2 "Material não está registado no sistema"
+        return 0
     else 
         so_success S1.2 "Material válido"
-        return 0
+        return 1
     fi
 
     so_debug ">"

@@ -10,6 +10,8 @@
 ## Nome do Módulo: manutencao.sh
 ## Descrição/Explicação do Módulo:
 ##
+## Este módula faz a manutenção dos limites de venda diários garantindo que se atualize  
+## a quantidade disponivel sempre que preciso
 ##
 #####################################################################################
 
@@ -37,7 +39,7 @@ s3_1_Manutencao () {
 
     if [ -f "vendas.txt" ]; then
         if [ ! -r "vendas.txt" ]; then
-            so_error S3.1 "ficheiro vendas.txt não pode ser lido"
+            so_error S3.1 "Ficheiro vendas.txt não tem as permissões de leitura corretas"
             exit 1 
         fi
     fi

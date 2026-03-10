@@ -31,7 +31,7 @@ s2_1_ValidaArgumentos () {
     if [ ! $# -eq 3 ]; then
         so_error S2.1 "Número de argumentos inválidos"
         exit 1
-    elif [ $3 -lt 0 ]; then
+    elif ! [[ "$3" =~ ^[0-9]+$ ]] || [ "$3" -le 0 ]; then
         so_error S2.1 "Peso inválido"
         exit 1
     fi
@@ -53,16 +53,21 @@ s2_2_ValidaVenda () {
     so_debug "<"
 
     if [ ! -f "vendas.txt" ]; then
-        so_error S2.2 "Ficheiro vendas.txt não existia e foi criado"
-        touch vendas.txt
+        so_error S2.2 "Ficheiro vendas.txt não existe"
+        touch vendas.txt 2>/dev/null
+        if [ ! -f "vendas.txt" ]; then
+            so_error S2.2 "Ficheiro vendas.txt não pode ser criado"
+            exit 1
+        fi
     elif [ ! -r "vendas.txt" ] || [ ! -w "vendas.txt" ]; then
         so_error S2.2 "Ficheiro vendas.txt não tem as permissões de escrito ou leitura corretas"
         exit 1
     elif ! grep -q "^$2;" materiais.txt ; then
         so_error S2.2 "$2 não está registado em materiais.txt"
+        exit 1
     fi
 
-    total=$(grep ";$2;" vendas.txt | cut -d ";" -f3 | awk '{sum+=$1} END {print sum+0}')
+    total=$(grep ";$2;[^;]*;${hoje}" vendas.txt | cut -d ";" -f3 | awk '{sum+=$1} END {print sum+0}')
     limite=$(grep "^$2;" materiais.txt | cut -d ";" -f3)
 
     if [ $(($3 + $total)) -gt $limite ]; then
